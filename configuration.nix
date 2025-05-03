@@ -223,7 +223,7 @@
   services.cron = {
     enable = true;
     systemCronJobs = [
-      "30 0 * * * root shutdown -h now"
+      "50 0 * * * root shutdown -h now"
     ];
   };
   # Some programs need SUID wrappers, can be configured further or are
