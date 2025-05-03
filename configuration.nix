@@ -189,12 +189,35 @@
   grim
   wl-clipboard
   mako
+  yazi
+  neofetch
+  gotop
   ];
 
   systemd.targets.sleep.enable = false;
   systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
+
+  security.sudo.wheelNeedsPassword = false;
+  
+ #Nextcloud configuration
+  environment.etc."nextcloud-admin-pass".text = "PWD";
+  services.nextcloud = {
+    enable = true;
+    package = pkgs.nextcloud30;
+    hostName = "localhost";
+    config = {
+      adminuser = "inoyu";
+      adminpassFile = "/etc/nextcloud-admin-pass";
+      objectstore.s3.useSsl = true;
+      dbtype = "sqlite";
+    };  
+    settings = {
+      trusted_domains = ["localhost" "nixos"];
+    };
+    
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
