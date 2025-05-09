@@ -192,6 +192,7 @@
   yazi
   neofetch
   gotop
+  python3
   ];
 
   systemd.targets.sleep.enable = false;
