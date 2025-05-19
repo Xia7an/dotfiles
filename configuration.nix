@@ -84,6 +84,7 @@
   };
 
   # swayを自動起動させるための設定
+  services.gnome.gnome-keyring.enable = true;
   services.displayManager = {
     defaultSession = "sway";
   };
@@ -92,6 +93,20 @@
     enable = true;
     wrapperFeatures.gtk = true;
   };
+  #kanshi config
+  systemd.user.services.kanshi = {
+    description = "kanshi daemon";
+    environment = {
+      WAYLAND_DISPLAY = "wayland-1";
+      DISPLAY = ":0";
+    };
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.kanshi}/bin/kanshi";
+    };
+  };
+
+
   # Enable the Deepin Desktop Environment.
   #services.xserver.displayManager.lightdm.enable = true;
   #services.xserver.desktopManager.deepin.enable = true;
@@ -177,6 +192,41 @@
   
   # Install firefox.
   programs.firefox.enable = true;
+  
+  #Docker configuration
+  virtualisation.docker.enable = true;
+  virtualisation.docker.rootless = {
+    enable = true;
+    setSocketVariable = true;
+  };
+  
+ #pdf2zh docker service
+ systemd.services.pdf2zhd = {
+    description = "pdf2zsh docker service";
+    after = [ "docker.service" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.docker}/bin/docker run -d -p 7860:7860 byaidu/pdf2zh";
+      RemainAfterExit = true;
+    };
+  };
+ systemd.services.ytmbookmarker = {
+    description = "YTM Bookmarker Next.js service";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      Type = "simple";
+      WorkingDirectory = "/home/inoyu/nextjs/ytmusic-bookmarker";
+      ExecStart = "/home/inoyu/.nix-profile/bin/npm run start";
+      Restart = "always";
+      EnvironmentFile = "/home/inoyu/nextjs/ytmusic-bookmarker/.env.local";
+    };
+  };
+
+
 
   # Allow unfree packages
   # nixpkgs.config.allowUnfree = true;
@@ -186,13 +236,20 @@
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
+  kitty
+  rofi
   grim
   wl-clipboard
   mako
   yazi
   neofetch
-  gotop
-  python3
+  gotop 
+  chromium
+  (python311.withPackages (ps: with ps; [
+      pip
+      requests
+      numpy 
+    ]))
   ];
 
   systemd.targets.sleep.enable = false;
@@ -238,7 +295,7 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
+  services.openssh.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];

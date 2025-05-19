@@ -1,0 +1,2 @@
+067ec66a965d8d5f4fa3bd452c959b248ca1b6e243f2278573d59f0e856b6c5e
+docker: Error response from daemon: driver failed programming external connectivity on endpoint interesting_ardinghelli (9d09fd7000039b8f999397e0c6ee9f35c73427569830b58a8426e3c3d9b1880f): Bind for 0.0.0.0:7860 failed: port is already allocated.
